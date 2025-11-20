@@ -86,7 +86,7 @@ export const Reader: React.FC<ReaderProps> = ({ book, onBack }) => {
         
         if (!buffer) {
             setIsLoadingAudio(false);
-            alert("Não foi possível gerar o áudio.");
+            alert("Não foi possível gerar o áudio.\n\nSe você está acessando pela Vercel, verifique se adicionou a API_KEY nas variáveis de ambiente do projeto (Settings -> Environment Variables).");
             return;
         }
         audioBufferRef.current = buffer;

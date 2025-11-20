@@ -1,4 +1,4 @@
-import { GoogleGenAI, Modality } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 
 const getClient = () => {
     const apiKey = process.env.API_KEY;
@@ -11,7 +11,7 @@ const getClient = () => {
 
 export const generateBookContent = async (prompt: string, currentContext: string = "") => {
     const client = getClient();
-    if (!client) return { text: "Erro: Chave de API não encontrada." };
+    if (!client) return { text: "Erro: Chave de API não encontrada. Verifique as configurações do ambiente (Vercel)." };
 
     try {
         const model = "gemini-2.5-flash";
@@ -101,17 +101,24 @@ async function decodeAudioData(
 
 export const generateBookAudio = async (text: string, audioContext: AudioContext): Promise<AudioBuffer | null> => {
     const client = getClient();
-    if (!client) return null;
+    if (!client) {
+        console.error("Gemini Client not initialized (missing API Key?)");
+        return null;
+    }
 
     try {
         // Truncate text to avoid token limits for this demo if text is huge
-        const safeText = text.substring(0, 2000); 
+        // Also ensure text is not empty/whitespace
+        const safeText = text ? text.trim().substring(0, 2000) : "";
+        
+        if (!safeText) return null;
 
         const response = await client.models.generateContent({
             model: "gemini-2.5-flash-preview-tts",
             contents: [{ parts: [{ text: safeText }] }],
             config: {
-                responseModalities: [Modality.AUDIO],
+                // Using string 'AUDIO' instead of Enum to avoid build issues in production envs
+                responseModalities: ['AUDIO' as any], 
                 speechConfig: {
                     voiceConfig: {
                         prebuiltVoiceConfig: { voiceName: 'Kore' }, // Kore is a good storytelling voice
@@ -122,7 +129,10 @@ export const generateBookAudio = async (text: string, audioContext: AudioContext
 
         const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
         
-        if (!base64Audio) return null;
+        if (!base64Audio) {
+            console.error("No audio data in response");
+            return null;
+        }
 
         const audioBuffer = await decodeAudioData(
             decode(base64Audio),
