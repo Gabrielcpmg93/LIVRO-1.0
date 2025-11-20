@@ -1,0 +1,7 @@
+{
+  "name": "Livreiro AI",
+  "description": "Plataforma de publicação e escrita de livros com IA, inspirada em lojas de e-books modernas.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
