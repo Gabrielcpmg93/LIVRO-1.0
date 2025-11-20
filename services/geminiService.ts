@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Modality } from "@google/genai";
 
 const getClient = () => {
     const apiKey = process.env.API_KEY;
@@ -111,7 +111,7 @@ export const generateBookAudio = async (text: string, audioContext: AudioContext
             model: "gemini-2.5-flash-preview-tts",
             contents: [{ parts: [{ text: safeText }] }],
             config: {
-                responseModalities: ["AUDIO"],
+                responseModalities: [Modality.AUDIO],
                 speechConfig: {
                     voiceConfig: {
                         prebuiltVoiceConfig: { voiceName: 'Kore' }, // Kore is a good storytelling voice

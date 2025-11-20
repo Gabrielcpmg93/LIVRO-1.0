@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ArrowLeft, Play, Pause, Loader2, Volume2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Book, PAGE_DELIMITER } from '../types';
@@ -65,7 +64,9 @@ export const Reader: React.FC<ReaderProps> = ({ book, onBack }) => {
 
     // 1. Init Context if needed
     if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
+        // FIX: Do not force sampleRate: 24000 here. Let the browser decide (usually 44.1k or 48k).
+        // The decodeAudioData function will create a buffer with 24k, and the context will resample it automatically.
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
     }
 
     // Resume context immediately to satisfy browser autoplay policies
