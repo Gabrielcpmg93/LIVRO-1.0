@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Save, Book, ChevronLeft } from 'lucide-react';
+import { Sparkles, Save, Book, ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react';
 import { generateBookContent, suggestBookTitles } from '../services/geminiService';
+import { PAGE_DELIMITER } from '../types';
 
 interface EditorProps {
     onSave?: (title: string, content: string) => void;
@@ -8,7 +10,10 @@ interface EditorProps {
 
 export const Editor: React.FC<EditorProps> = ({ onSave }) => {
   const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  // State now holds an array of pages
+  const [pages, setPages] = useState<string[]>(['']);
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  
   const [isGenerating, setIsGenerating] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [showPrompt, setShowPrompt] = useState(false);
@@ -20,25 +25,67 @@ export const Editor: React.FC<EditorProps> = ({ onSave }) => {
     if (saved) {
         const parsed = JSON.parse(saved);
         setTitle(parsed.title || '');
-        setContent(parsed.content || '');
+        
+        // Load pages or fallback to single page
+        const content = parsed.content || '';
+        if (content.includes(PAGE_DELIMITER)) {
+            setPages(content.split(PAGE_DELIMITER));
+        } else {
+            setPages([content]);
+        }
     }
   }, []);
 
   const handleSave = () => {
-    localStorage.setItem('draft_book', JSON.stringify({ title, content }));
+    // Join pages into a single string with the delimiter
+    const fullContent = pages.join(PAGE_DELIMITER);
+    
+    localStorage.setItem('draft_book', JSON.stringify({ title, content: fullContent }));
     if (onSave) {
-        onSave(title, content);
+        onSave(title, fullContent);
     } else {
         alert('Rascunho salvo!');
     }
   };
 
+  const handlePageChange = (index: number) => {
+      if (index >= 0 && index < pages.length) {
+          setCurrentPageIndex(index);
+      }
+  };
+
+  const handleAddPage = () => {
+      setPages([...pages, '']);
+      setCurrentPageIndex(pages.length); // Go to the new page
+  };
+
+  const handleDeletePage = () => {
+      if (pages.length <= 1) {
+          setPages(['']); // Reset if it's the last one
+          return;
+      }
+      const newPages = pages.filter((_, i) => i !== currentPageIndex);
+      setPages(newPages);
+      setCurrentPageIndex(Math.max(0, currentPageIndex - 1));
+  };
+
+  const updateCurrentPageContent = (newText: string) => {
+      const newPages = [...pages];
+      newPages[currentPageIndex] = newText;
+      setPages(newPages);
+  };
+
   const handleAIWrite = async () => {
     if (!prompt.trim()) return;
     setIsGenerating(true);
-    const result = await generateBookContent(prompt, content);
+    
+    // Context includes previous page end and current page so far
+    const currentContent = pages[currentPageIndex];
+    const context = (currentPageIndex > 0 ? pages[currentPageIndex - 1].slice(-500) : "") + "\n" + currentContent;
+
+    const result = await generateBookContent(prompt, context);
     if (result.text) {
-        setContent(prev => prev + "\n\n" + result.text);
+        updateCurrentPageContent(currentContent + "\n\n" + result.text);
     }
     setIsGenerating(false);
     setShowPrompt(false);
@@ -47,7 +94,8 @@ export const Editor: React.FC<EditorProps> = ({ onSave }) => {
 
   const handleSuggestTitles = async () => {
       setIsGenerating(true);
-      const titles = await suggestBookTitles(content.substring(0, 500) || "Uma história de aventura e mistério");
+      const fullContext = pages.join(' ').substring(0, 500);
+      const titles = await suggestBookTitles(fullContext || "Uma história de aventura e mistério");
       setSuggestedTitles(titles);
       setIsGenerating(false);
   };
@@ -72,6 +120,7 @@ export const Editor: React.FC<EditorProps> = ({ onSave }) => {
       {/* Main Writing Area */}
       <div className="flex-1 overflow-y-auto p-6 max-w-3xl mx-auto w-full">
         
+        {/* Only show title input on first page to keep UI clean, or always? Always is better for context. */}
         <input 
             type="text" 
             placeholder="Título do seu livro..."
@@ -97,12 +146,60 @@ export const Editor: React.FC<EditorProps> = ({ onSave }) => {
             </div>
         )}
 
-        <textarea 
-            placeholder="Comece a escrever sua história aqui..."
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="w-full h-[60vh] resize-none outline-none text-lg text-gray-700 dark:text-gray-300 leading-relaxed placeholder-gray-300 dark:placeholder-gray-600 bg-transparent"
-        />
+        <div className="relative min-h-[50vh]">
+            <span className="absolute -top-6 right-0 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                Página {currentPageIndex + 1} de {pages.length}
+            </span>
+            <textarea 
+                placeholder={`Escreva o conteúdo da página ${currentPageIndex + 1} aqui...`}
+                value={pages[currentPageIndex]}
+                onChange={(e) => updateCurrentPageContent(e.target.value)}
+                className="w-full h-full min-h-[50vh] resize-none outline-none text-lg text-gray-700 dark:text-gray-300 leading-relaxed placeholder-gray-300 dark:placeholder-gray-600 bg-transparent pb-10"
+            />
+        </div>
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="border-t dark:border-gray-800 bg-gray-50 dark:bg-gray-900 px-4 py-2 flex items-center justify-between">
+        <button 
+            onClick={() => handlePageChange(currentPageIndex - 1)}
+            disabled={currentPageIndex === 0}
+            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 disabled:opacity-30 text-gray-600 dark:text-gray-300"
+        >
+            <ChevronLeft size={20} />
+        </button>
+
+        <div className="flex items-center gap-4">
+            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                {currentPageIndex + 1} / {pages.length}
+            </span>
+            
+            {pages.length > 1 && (
+                 <button 
+                    onClick={handleDeletePage}
+                    className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                    title="Excluir página atual"
+                >
+                    <Trash2 size={16} />
+                </button>
+            )}
+
+            <button 
+                onClick={handleAddPage}
+                className="flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm text-sm font-medium text-primary dark:text-green-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+                <Plus size={16} />
+                Nova Página
+            </button>
+        </div>
+
+        <button 
+            onClick={() => handlePageChange(currentPageIndex + 1)}
+            disabled={currentPageIndex === pages.length - 1}
+            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 disabled:opacity-30 text-gray-600 dark:text-gray-300"
+        >
+            <ChevronRight size={20} />
+        </button>
       </div>
 
       {/* AI Toolbar */}
@@ -131,7 +228,7 @@ export const Editor: React.FC<EditorProps> = ({ onSave }) => {
                 <div className="flex justify-between items-center mb-1">
                     <span className="text-xs font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1">
                         <Sparkles size={12} />
-                        GEMINI ASSISTANT
+                        GEMINI ASSISTANT (Página {currentPageIndex + 1})
                     </span>
                     <button onClick={() => setShowPrompt(false)} className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
                         <ChevronLeft size={20} />

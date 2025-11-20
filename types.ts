@@ -1,3 +1,4 @@
+
 export interface Book {
   id: string;
   title: string;
@@ -25,3 +26,5 @@ export enum GenerationStatus {
   SUCCESS = 'SUCCESS',
   ERROR = 'ERROR',
 }
+
+export const PAGE_DELIMITER = '\n\n<!-- PAGE_BREAK -->\n\n';
