@@ -316,14 +316,14 @@ export const App: React.FC = () => {
             {/* Single Post View Overlay */}
             {currentViewBook && (
                 <div className="fixed inset-0 z-[60] bg-white dark:bg-black flex flex-col animate-in slide-in-from-right duration-200 w-full max-w-md mx-auto">
-                    <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-gray-800 sticky top-0 bg-white dark:bg-black z-10">
+                    <div className="flex items-center gap-4 px-4 py-3 border-b border-gray-100 dark:border-gray-800 sticky top-0 bg-white dark:bg-black z-10">
                         <button 
                             onClick={() => setViewingBook(null)}
-                            className="text-gray-900 dark:text-white p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                            className="text-gray-900 dark:text-white p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         >
-                            <ArrowLeft size={24} />
+                            <ArrowLeft size={26} />
                         </button>
-                        <h2 className="text-lg font-bold text-gray-900 dark:text-white">Publicação</h2>
+                        <h2 className="text-lg font-bold text-gray-900 dark:text-white">Explorar</h2>
                     </div>
                     
                     <div className="flex-1 overflow-y-auto bg-white dark:bg-black">
@@ -333,6 +333,8 @@ export const App: React.FC = () => {
                             onOpen={() => {}} 
                             onToggleLike={handleToggleLike}
                         />
+                         {/* Spacer for bottom */}
+                         <div className="h-10"></div>
                     </div>
                 </div>
             )}
