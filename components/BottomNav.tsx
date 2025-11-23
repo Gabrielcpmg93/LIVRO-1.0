@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Grid, Search, BookOpen, PenTool } from 'lucide-react';
+import { House, Search, PlusSquare, ShoppingBag, User } from 'lucide-react';
 import { NavTab } from '../types';
 
 interface BottomNavProps {
@@ -10,14 +11,15 @@ interface BottomNavProps {
 export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) => {
   
   const navItems = [
-    { id: 'write', label: 'Escrever', icon: PenTool },
-    { id: 'apps', label: 'Apps', icon: Grid },
-    { id: 'search', label: 'Pesquisa', icon: Search },
-    { id: 'books', label: 'Livros', icon: BookOpen },
+    { id: 'home', icon: House },
+    { id: 'search', icon: Search },
+    { id: 'create', icon: PlusSquare }, // Destaque para criação
+    { id: 'store', icon: ShoppingBag },
+    { id: 'profile', icon: User },
   ];
 
   return (
-    <div className="sticky bottom-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-2 pb-1 pt-2 flex justify-around items-center z-50 safe-area-bottom transition-colors duration-300">
+    <div className="sticky bottom-0 bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 px-4 pb-2 pt-3 flex justify-between items-center z-50 safe-area-bottom transition-colors duration-300">
       {navItems.map((item) => {
         const isActive = activeTab === item.id;
         const Icon = item.icon;
@@ -26,18 +28,14 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
           <button 
             key={item.id}
             onClick={() => onTabChange(item.id as NavTab)}
-            className="flex flex-col items-center justify-center w-16 py-1 group"
+            className="flex flex-col items-center justify-center w-12 h-10 group"
           >
-            <div className={`mb-1 rounded-full py-1 px-4 transition-colors ${isActive ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-transparent group-hover:bg-gray-50 dark:group-hover:bg-gray-800'}`}>
-                 <Icon 
-                    size={24} 
-                    className={`${isActive ? 'text-blue-900 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`} 
-                    strokeWidth={isActive ? 2.5 : 2}
-                />
-            </div>
-            <span className={`text-[12px] font-medium ${isActive ? 'text-gray-900 dark:text-gray-200' : 'text-gray-500 dark:text-gray-500'}`}>
-              {item.label}
-            </span>
+            <Icon 
+                size={item.id === 'create' ? 28 : 26} 
+                className={`${isActive ? 'text-black dark:text-white fill-current' : 'text-gray-500 dark:text-gray-400'}`} 
+                strokeWidth={isActive ? 2.5 : 1.8}
+                fill={isActive && item.id !== 'search' && item.id !== 'create' ? "currentColor" : "none"} // Search e Create geralmente não têm fill total
+            />
           </button>
         );
       })}

@@ -3,14 +3,17 @@ export interface Book {
   id: string;
   title: string;
   author: string;
+  authorAvatar?: string; // Avatar do autor
   coverUrl: string;
   rating: number;
+  likesCount?: number; // Quantidade de likes visual
+  commentsCount?: number; // Quantidade de comentários visual
   price?: number;
   isFree?: boolean;
   category?: string;
   series?: string;
   content?: string;
-  isLiked?: boolean; // New property for favorites
+  isLiked?: boolean; // Estado do like
 }
 
 export interface CategorySection {
@@ -18,7 +21,7 @@ export interface CategorySection {
   books: Book[];
 }
 
-export type NavTab = 'games' | 'apps' | 'search' | 'books' | 'write';
+export type NavTab = 'home' | 'search' | 'create' | 'store' | 'profile';
 
 export enum GenerationStatus {
   IDLE = 'IDLE',

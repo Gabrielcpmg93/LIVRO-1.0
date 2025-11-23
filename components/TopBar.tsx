@@ -1,55 +1,67 @@
-import React from 'react';
-import { Search, Mic, Settings } from 'lucide-react';
 
-const TABS = ['E-books', 'Audiolivros', 'HQs', 'Vendas', 'Gêneros', 'Lançamentos'];
+import React from 'react';
+import { Heart, MessageCircle, Plus } from 'lucide-react';
 
 interface TopBarProps {
-  onOpenSettings: () => void;
+  onOpenSettings?: () => void;
 }
+
+const STORIES = [
+  { name: 'Seu story', img: 'https://picsum.photos/100/100?random=99', isMe: true },
+  { name: 'marcos_grp', img: 'https://picsum.photos/100/100?random=1' },
+  { name: 'rev_ezagui', img: 'https://picsum.photos/100/100?random=2' },
+  { name: 'leitura_br', img: 'https://picsum.photos/100/100?random=3' },
+  { name: 'book_club', img: 'https://picsum.photos/100/100?random=4' },
+  { name: 'editora_x', img: 'https://picsum.photos/100/100?random=5' },
+];
 
 export const TopBar: React.FC<TopBarProps> = ({ onOpenSettings }) => {
   return (
-    <div className="sticky top-0 bg-white dark:bg-gray-900 z-50 pb-2 shadow-sm dark:shadow-gray-800 transition-colors duration-300">
-      {/* Search Row */}
-      <div className="flex items-center gap-3 px-4 py-3">
-        <div className="flex-1 relative">
-          <div className="flex items-center bg-surface dark:bg-gray-800 rounded-full h-12 px-4 shadow-sm border border-transparent focus-within:border-gray-300 dark:focus-within:border-gray-600 focus-within:bg-white dark:focus-within:bg-gray-800 focus-within:shadow-md transition-all">
-            <Search size={20} className="text-gray-500 dark:text-gray-400 mr-3" />
-            <input 
-              type="text" 
-              placeholder="Pesquisar livros" 
-              className="bg-transparent flex-1 outline-none text-gray-700 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-500 text-[16px]"
-            />
-            <Mic size={20} className="text-gray-600 dark:text-gray-400 ml-2 cursor-pointer" />
-          </div>
-        </div>
-        
-        <button 
-          onClick={onOpenSettings}
-          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors"
-          aria-label="Configurações"
-        >
-          <Settings size={24} />
-        </button>
+    <div className="sticky top-0 bg-white dark:bg-black z-50 shadow-sm dark:border-b dark:border-gray-800 transition-colors duration-300">
+      {/* Header Row */}
+      <div className="flex items-center justify-between px-4 py-3">
+        {/* Logo Text (Instagram Style) */}
+        <h1 className="text-2xl font-bold text-black dark:text-white" style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.5px' }}>
+          Livreiro
+        </h1>
 
-        <div className="flex-shrink-0 w-9 h-9 bg-green-800 rounded-full flex items-center justify-center text-white font-medium text-sm cursor-pointer select-none shadow-sm">
-          C
+        {/* Actions */}
+        <div className="flex items-center gap-5">
+          <button className="relative text-black dark:text-white hover:opacity-70 transition-opacity">
+            <Heart size={24} />
+            <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-black"></span>
+          </button>
+          <button className="relative text-black dark:text-white hover:opacity-70 transition-opacity">
+            <MessageCircle size={24} />
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold">
+              3
+            </span>
+          </button>
         </div>
       </div>
 
-      {/* Tabs Row */}
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar px-4 mt-1">
-        {TABS.map((tab, index) => (
-          <button 
-            key={tab}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-              index === 0 
-                ? 'text-primary border-b-2 border-primary rounded-none px-1 mx-2 dark:text-green-400 dark:border-green-400' 
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700'
-            }`}
-          >
-            {tab}
-          </button>
+      {/* Stories Row */}
+      <div className="flex gap-4 overflow-x-auto no-scrollbar px-4 pb-3 border-b border-gray-100 dark:border-gray-800">
+        {STORIES.map((story, index) => (
+          <div key={index} className="flex flex-col items-center gap-1 flex-shrink-0 cursor-pointer">
+            <div className={`p-[2px] rounded-full ${story.isMe ? 'bg-transparent' : 'bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500'}`}>
+              <div className="p-[2px] bg-white dark:bg-black rounded-full relative">
+                <img 
+                  src={story.img} 
+                  alt={story.name} 
+                  className="w-16 h-16 rounded-full object-cover"
+                />
+                {story.isMe && (
+                   <div className="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full p-0.5 border-2 border-white dark:border-black">
+                     <Plus size={12} />
+                   </div>
+                )}
+              </div>
+            </div>
+            <span className="text-[11px] text-gray-900 dark:text-gray-200 truncate w-16 text-center">
+              {story.name}
+            </span>
+          </div>
         ))}
       </div>
     </div>
