@@ -50,7 +50,7 @@ export const FeedPost: React.FC<FeedPostProps> = ({ book, onOpen, onToggleLike }
         <img 
           src={book.coverUrl} 
           alt={book.title} 
-          className="w-full h-auto object-contain"
+          className="w-full h-auto block"
           loading="lazy"
         />
         

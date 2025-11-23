@@ -126,7 +126,7 @@ export const App: React.FC = () => {
     );
   };
 
-  // Helper to get the latest state of the viewing book (so likes update in real time in the modal)
+  // Helper to get the latest state of the viewing book
   const currentViewBook = viewingBook ? (myBooks.find(b => b.id === viewingBook.id) || viewingBook) : null;
 
   const renderContent = () => {
@@ -140,7 +140,7 @@ export const App: React.FC = () => {
           <TopBar onOpenSettings={() => setShowSettings(true)} />
           
           <div className="flex flex-col">
-              {/* Stories Bar (Optional touch) */}
+              {/* Stories Bar */}
               <div className="flex gap-4 p-4 overflow-x-auto no-scrollbar border-b border-gray-100 dark:border-gray-800">
                   <div className="flex flex-col items-center gap-1 cursor-pointer group">
                       <div className="w-16 h-16 rounded-full border-2 border-gray-300 dark:border-gray-700 p-0.5 group-hover:border-gray-400 transition-colors">
@@ -196,7 +196,6 @@ export const App: React.FC = () => {
                             className="aspect-square bg-gray-200 dark:bg-gray-800 cursor-pointer overflow-hidden relative group"
                         >
                              <img src={book.coverUrl} className="w-full h-full object-cover" />
-                             {/* Hover effect for desktop, but subtle */}
                              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                          </div>
                     ))}
@@ -313,7 +312,7 @@ export const App: React.FC = () => {
     
             <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
             
-            {/* Single Post View Overlay */}
+            {/* Single Post View Overlay - Replaces Reader View */}
             {currentViewBook && (
                 <div className="fixed inset-0 z-[60] bg-white dark:bg-black flex flex-col animate-in slide-in-from-right duration-200 w-full max-w-md mx-auto">
                     <div className="flex items-center gap-4 px-4 py-3 border-b border-gray-100 dark:border-gray-800 sticky top-0 bg-white dark:bg-black z-10">
@@ -327,14 +326,12 @@ export const App: React.FC = () => {
                     </div>
                     
                     <div className="flex-1 overflow-y-auto bg-white dark:bg-black">
-                        {/* Feed Post View */}
                         <FeedPost 
                             book={currentViewBook} 
                             onOpen={() => {}} 
                             onToggleLike={handleToggleLike}
                         />
-                         {/* Spacer for bottom */}
-                         <div className="h-10"></div>
+                         <div className="h-24"></div>
                     </div>
                 </div>
             )}
