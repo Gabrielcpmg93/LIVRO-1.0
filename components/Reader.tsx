@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ArrowLeft, Play, Pause, Loader2, Volume2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Book, PAGE_DELIMITER } from '../types';
@@ -147,7 +148,7 @@ export const Reader: React.FC<ReaderProps> = ({ book, onBack }) => {
     <div className="fixed inset-0 bg-white dark:bg-gray-900 z-[60] flex flex-col animate-in slide-in-from-right duration-200 transition-colors duration-500">
       <div className="flex items-center justify-between p-4 border-b dark:border-gray-800 shadow-sm bg-white dark:bg-gray-900 sticky top-0 z-10 transition-colors duration-500">
         <div className="flex items-center gap-3 overflow-hidden">
-            <button onClick={() => { stopAudio(); onBack(); }} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors shrink-0">
+            <button onClick={() => { stopAudio(); onBack(); }} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors shrink-0">
                 <ArrowLeft size={24} className="text-gray-700 dark:text-gray-300" />
             </button>
             <div className="flex flex-col overflow-hidden">
@@ -159,10 +160,10 @@ export const Reader: React.FC<ReaderProps> = ({ book, onBack }) => {
         <button 
             onClick={toggleAudio}
             disabled={isLoadingAudio}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium text-sm transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm transition-all shadow-sm ${
                 isPlaying 
                 ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' 
-                : 'bg-primary text-white hover:bg-green-700'
+                : 'bg-gray-900 text-white dark:bg-white dark:text-black hover:opacity-90'
             }`}
         >
             {isLoadingAudio ? (
@@ -172,7 +173,7 @@ export const Reader: React.FC<ReaderProps> = ({ book, onBack }) => {
             ) : (
                 <Play size={18} fill="currentColor" />
             )}
-            <span className="hidden sm:inline">{isPlaying ? 'Pausar' : 'Ler Página'}</span>
+            <span className="hidden sm:inline">{isPlaying ? 'Pausar' : 'Ouvir'}</span>
         </button>
       </div>
 
@@ -181,7 +182,7 @@ export const Reader: React.FC<ReaderProps> = ({ book, onBack }) => {
             {/* Book Header only on Page 1 */}
             {currentPageIndex === 0 && (
                 <div className="flex flex-col items-center mb-8 animate-in fade-in slide-in-from-top-4">
-                    <div className="w-32 h-48 rounded-md shadow-lg overflow-hidden mb-4 relative group">
+                    <div className="w-40 h-auto rounded-lg shadow-xl overflow-hidden mb-6 relative group">
                         <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover" />
                         {isPlaying && (
                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
@@ -205,26 +206,26 @@ export const Reader: React.FC<ReaderProps> = ({ book, onBack }) => {
       </div>
 
       {/* Pagination Controls */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t dark:border-gray-800 flex items-center justify-between max-w-md mx-auto w-full sm:max-w-full sm:px-10">
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t dark:border-gray-800 flex items-center justify-between max-w-md mx-auto w-full sm:max-w-full sm:px-10">
             <button 
                 onClick={handlePrevPage}
                 disabled={currentPageIndex === 0}
-                className="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 text-gray-700 dark:text-gray-200 transition-colors"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 text-gray-900 dark:text-gray-100 font-semibold transition-colors border border-gray-100 dark:border-gray-800"
             >
                 <ChevronLeft size={20} />
-                <span className="font-medium">Anterior</span>
+                <span className="font-medium hidden xs:inline">Anterior</span>
             </button>
 
-            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            <span className="text-sm font-mono font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 px-3 py-1 rounded-md">
                 {currentPageIndex + 1} / {Math.max(1, pages.length)}
             </span>
 
             <button 
                 onClick={handleNextPage}
                 disabled={currentPageIndex >= pages.length - 1}
-                className="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 text-gray-700 dark:text-gray-200 transition-colors"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 text-gray-900 dark:text-gray-100 font-semibold transition-colors border border-gray-100 dark:border-gray-800"
             >
-                <span className="font-medium">Próxima</span>
+                <span className="font-medium hidden xs:inline">Próxima</span>
                 <ChevronRight size={20} />
             </button>
       </div>

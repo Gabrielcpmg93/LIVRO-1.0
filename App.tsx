@@ -140,9 +140,9 @@ const App: React.FC = () => {
           <div className="flex flex-col">
               {/* Stories Bar (Optional touch) */}
               <div className="flex gap-4 p-4 overflow-x-auto no-scrollbar border-b border-gray-100 dark:border-gray-800">
-                  <div className="flex flex-col items-center gap-1 cursor-pointer">
-                      <div className="w-16 h-16 rounded-full border-2 border-gray-300 dark:border-gray-700 p-0.5">
-                          <div className="w-full h-full bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center text-2xl font-light dark:text-white">+</div>
+                  <div className="flex flex-col items-center gap-1 cursor-pointer group">
+                      <div className="w-16 h-16 rounded-full border-2 border-gray-300 dark:border-gray-700 p-0.5 group-hover:border-gray-400 transition-colors">
+                          <div className="w-full h-full bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center text-2xl font-light dark:text-white text-gray-400">+</div>
                       </div>
                       <span className="text-xs text-gray-600 dark:text-gray-400">Seu story</span>
                   </div>
@@ -176,7 +176,7 @@ const App: React.FC = () => {
         return (
             <div className="pb-20">
                 <div className="sticky top-0 bg-white dark:bg-black z-10 px-4 py-3">
-                    <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-xl px-4 py-2">
+                    <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2">
                         <Search size={18} className="text-gray-500 mr-2" />
                         <input 
                             type="text" 
@@ -206,11 +206,14 @@ const App: React.FC = () => {
     if (activeTab === 'store') {
         return (
             <div className="flex flex-col items-center justify-center h-[80vh] p-8 text-center">
-                <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
-                    <Bookmark size={32} className="text-gray-400" />
+                <div className="w-24 h-24 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-6">
+                    <Bookmark size={40} className="text-gray-400" />
                 </div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Loja em breve</h2>
-                <p className="text-gray-500 mt-2">Aqui você poderá comprar filtros exclusivos e produtos dos seus criadores favoritos.</p>
+                <p className="text-gray-500 mt-2 max-w-xs">Aqui você poderá comprar filtros exclusivos e produtos dos seus criadores favoritos.</p>
+                <button className="mt-6 px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors">
+                    Ser notificado
+                </button>
             </div>
         );
     }
@@ -223,8 +226,8 @@ const App: React.FC = () => {
                         voce_oficial <span className="w-2 h-2 rounded-full bg-red-500" />
                      </h2>
                      <div className="flex gap-4">
-                        <PlusSquare size={24} className="text-gray-900 dark:text-white" />
-                        <Menu size={24} className="text-gray-900 dark:text-white cursor-pointer" onClick={() => setShowSettings(true)} />
+                        <PlusSquare size={24} className="text-gray-900 dark:text-white hover:opacity-70 cursor-pointer" />
+                        <Menu size={24} className="text-gray-900 dark:text-white cursor-pointer hover:opacity-70" onClick={() => setShowSettings(true)} />
                      </div>
                 </div>
 
@@ -255,16 +258,16 @@ const App: React.FC = () => {
                     </div>
 
                     <div className="flex gap-2">
-                        <button className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-sm font-semibold py-1.5 rounded-lg">Editar Perfil</button>
-                        <button className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-sm font-semibold py-1.5 rounded-lg">Compartilhar</button>
-                        <button className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white px-2 rounded-lg"><UserCheck size={16}/></button>
+                        <button className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-sm font-semibold py-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Editar Perfil</button>
+                        <button className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-sm font-semibold py-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Compartilhar</button>
+                        <button className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white px-2.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"><UserCheck size={18}/></button>
                     </div>
                 </div>
 
                 {/* Highlights */}
                 <div className="flex px-4 gap-4 overflow-x-auto no-scrollbar mb-4">
                     {[1,2,3].map(i => (
-                        <div key={i} className="flex flex-col items-center gap-1 shrink-0">
+                        <div key={i} className="flex flex-col items-center gap-1 shrink-0 cursor-pointer">
                              <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1">
                                 <div className="w-full h-full bg-gray-300 dark:bg-gray-700 rounded-full" />
                              </div>
@@ -275,13 +278,13 @@ const App: React.FC = () => {
 
                 {/* Tab Selector */}
                 <div className="flex border-t border-gray-100 dark:border-gray-800">
-                    <button className="flex-1 py-2 flex justify-center border-b-2 border-black dark:border-white">
+                    <button className="flex-1 py-2.5 flex justify-center border-b-[1.5px] border-black dark:border-white">
                         <Grid size={24} className="text-black dark:text-white" />
                     </button>
-                    <button className="flex-1 py-2 flex justify-center">
+                    <button className="flex-1 py-2.5 flex justify-center hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
                         <Bookmark size={24} className="text-gray-400" />
                     </button>
-                    <button className="flex-1 py-2 flex justify-center">
+                    <button className="flex-1 py-2.5 flex justify-center hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
                          <UserCheck size={24} className="text-gray-400" />
                     </button>
                 </div>
