@@ -2,101 +2,78 @@
 import React, { useState, useEffect } from 'react';
 import { TopBar } from './components/TopBar';
 import { BottomNav } from './components/BottomNav';
-import { BookSection } from './components/BookSection';
+import { FeedPost } from './components/FeedPost';
 import { Editor } from './components/Editor';
 import { Reader } from './components/Reader';
 import { SettingsModal } from './components/SettingsModal';
 import { NavTab, Book } from './types';
-import { Search, Play } from 'lucide-react';
+import { Search, Grid, List, Bookmark, UserCheck, Menu, PlusSquare } from 'lucide-react';
 
 const INITIAL_BOOKS: Book[] = [
   {
     id: '1',
-    title: 'Renovação Social e Imortalidade',
-    author: 'Grupo Marcos',
-    authorAvatar: 'https://picsum.photos/100/100?random=1',
-    coverUrl: 'https://picsum.photos/400/500?random=1',
+    title: 'Pôr do sol incrível hoje! 🌅',
+    author: 'Marcos_Viajante',
+    authorAvatar: 'https://picsum.photos/id/1011/100/100',
+    coverUrl: 'https://picsum.photos/id/1015/800/800', // Landscape/Squareish
     rating: 5.0,
     likesCount: 1240,
     commentsCount: 45,
     isFree: true,
-    series: 'Filosofia Moderna',
-    category: 'Filosofia',
+    series: 'Viagens',
+    category: 'Lifestyle',
     isLiked: true,
-    content: `CAPÍTULO 1
-
-O sol da manhã iluminava suavemente as colinas, trazendo consigo a promessa de um novo tempo. A sociedade, há muito estagnada em seus velhos costumes, começava a sentir os ventos da mudança soprarem através das ruas de paralelepípedos.`
+    content: `A natureza nunca decepciona. Depois de uma longa caminhada, essa vista fez tudo valer a pena. #nature #travel #peace`
   },
   {
     id: '2',
-    title: 'Vampirização',
-    author: 'Rev. Ezagui',
-    authorAvatar: 'https://picsum.photos/100/100?random=2',
-    coverUrl: 'https://picsum.photos/400/500?random=2',
+    title: 'Café da manhã dos campeões ☕️',
+    author: 'Foodie_Life',
+    authorAvatar: 'https://picsum.photos/id/1027/100/100',
+    coverUrl: 'https://picsum.photos/id/1060/800/1000', // Portrait
     rating: 4.8,
     likesCount: 856,
     commentsCount: 12,
     isFree: true,
-    series: 'Mistérios Ocultos',
-    category: 'Terror',
+    series: 'Gastronomia',
+    category: 'Comida',
     isLiked: false,
-    content: `PRÓLOGO
-
-A noite estava densa, e o nevoeiro cobria a cidade como um manto gélido. Poucos ousavam sair de suas casas após o toque de recolher, mas Helena não tinha escolha. Precisava encontrar o remédio para sua mãe.`
+    content: `Começando o dia com energia! Panquecas, frutas e muito café. Qual o seu café da manhã preferido? 👇`
   },
   {
     id: '3',
-    title: 'Pontos Vitais da Evolução',
-    author: 'Leitura BR',
-    authorAvatar: 'https://picsum.photos/100/100?random=3',
-    coverUrl: 'https://picsum.photos/400/500?random=3',
+    title: 'Novo setup de trabalho 💻',
+    author: 'Tech_Guru',
+    authorAvatar: 'https://picsum.photos/id/1/100/100',
+    coverUrl: 'https://picsum.photos/id/1/800/800',
     rating: 4.9,
     likesCount: 2300,
     commentsCount: 156,
-    price: 4.99,
     isFree: true,
-    category: 'Ciência',
+    category: 'Tech',
     isLiked: false,
-    content: `INTRODUÇÃO
-
-A evolução não é uma linha reta. É uma espiral complexa, repleta de pontos vitais onde decisões cruciais determinam o destino de espécies inteiras. Neste volume, exploraremos os momentos.`
+    content: `Minimalismo é a chave para a produtividade. O que acharam do novo teclado mecânico?`
   },
   {
     id: '4',
-    title: 'O Despertar',
-    author: 'Consciência Viva',
-    authorAvatar: 'https://picsum.photos/100/100?random=4',
-    coverUrl: 'https://picsum.photos/400/500?random=4',
+    title: 'Arte urbana em SP 🎨',
+    author: 'Urban_Art',
+    authorAvatar: 'https://picsum.photos/id/103/100/100',
+    coverUrl: 'https://picsum.photos/id/103/800/1200',
     rating: 4.5,
     likesCount: 54,
     commentsCount: 2,
     isFree: true,
-    category: 'Autoajuda',
+    category: 'Arte',
     isLiked: false,
-    content: `CAPÍTULO ÚNICO
-
-Acordar é fácil. Despertar é o desafio. Todos os dias abrimos os olhos para o mundo físico, mas quantas vezes abrimos os olhos da mente para a realidade que nos cerca?`
-  },
-   {
-    id: '5',
-    title: 'Futuro Distante',
-    author: 'AI Writer',
-    authorAvatar: 'https://picsum.photos/100/100?random=5',
-    coverUrl: 'https://picsum.photos/400/500?random=5',
-    rating: 4.2,
-    category: 'Ficção Científica',
-    isLiked: false,
-    content: `ANO 3042. A Terra não é mais a mesma.`
+    content: `Caminhando pelo centro e encontrei essa obra prima.`
   }
 ];
-
-const CATEGORIES = ["Todos", "Romance", "Ficção", "Terror", "Autoajuda", "Negócios", "História"];
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NavTab>('home'); 
   const [myBooks, setMyBooks] = useState<Book[]>(INITIAL_BOOKS);
   const [viewingBook, setViewingBook] = useState<Book | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState("Todos");
   
   // Theme & Settings State
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -115,17 +92,17 @@ const App: React.FC = () => {
     localStorage.setItem('app_theme', newTheme);
   };
 
-  const handleSaveBook = (title: string, content: string, coverImage: string | null) => {
+  const handleSavePost = (title: string, content: string, coverImage: string | null) => {
     const newBook: Book = {
       id: Date.now().toString(),
-      title: title || 'Sem Título',
-      author: 'Você', 
+      title: title || 'Nova Foto',
+      author: 'voce_oficial', 
       authorAvatar: 'https://ui-avatars.com/api/?name=Voce&background=000&color=fff',
       coverUrl: coverImage || `https://picsum.photos/400/500?random=${Date.now()}`, 
       rating: 5.0,
       isFree: true,
       content: content,
-      category: 'Meus Livros',
+      category: 'Feed',
       isLiked: false,
       likesCount: 0,
       commentsCount: 0
@@ -139,126 +116,88 @@ const App: React.FC = () => {
     setMyBooks(prevBooks => 
       prevBooks.map(b => {
         if (b.id === book.id) {
-            return { ...b, isLiked: !b.isLiked };
+            return { 
+                ...b, 
+                isLiked: !b.isLiked,
+                likesCount: b.isLiked ? (b.likesCount || 0) - 1 : (b.likesCount || 0) + 1
+            };
         }
         return b;
       })
     );
   };
 
-  // Helper to filter books
-  const filteredBooks = selectedCategory === "Todos" 
-    ? myBooks 
-    : myBooks.filter(b => b.category === selectedCategory);
-
   const renderContent = () => {
     if (activeTab === 'create') {
-      return <Editor onSave={handleSaveBook} />;
+      return <Editor onSave={handleSavePost} onCancel={() => setActiveTab('home')} />;
     }
 
     if (activeTab === 'home') {
-      const featuredBook = myBooks[0]; // Just taking the first as featured
-
       return (
-        <div className="pb-20">
+        <div className="pb-10">
           <TopBar onOpenSettings={() => setShowSettings(true)} />
           
-          {/* Categories Chips */}
-          <div className="px-5 mb-6 overflow-x-auto no-scrollbar flex gap-2">
-            {CATEGORIES.map(cat => (
-                <button 
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                        selectedCategory === cat 
-                        ? 'bg-gray-900 text-white dark:bg-white dark:text-black' 
-                        : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
-                    }`}
-                >
-                    {cat}
-                </button>
-            ))}
-          </div>
-
-          {/* Featured Hero Section */}
-          {selectedCategory === "Todos" && (
-              <div className="px-5 mb-8">
-                <div 
-                    onClick={() => setViewingBook(featuredBook)}
-                    className="relative w-full aspect-[2/1] bg-gray-900 rounded-2xl overflow-hidden shadow-2xl cursor-pointer group"
-                >
-                    {/* Background Blur Image */}
-                    <img src={featuredBook.coverUrl} className="absolute inset-0 w-full h-full object-cover opacity-50 blur-sm scale-110" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-                    
-                    {/* Content */}
-                    <div className="absolute bottom-0 left-0 p-5 w-full">
-                        <span className="px-2 py-0.5 rounded bg-primary text-white text-[10px] font-bold uppercase tracking-wide mb-2 inline-block">
-                            Destaque do Dia
-                        </span>
-                        <h2 className="text-xl font-bold text-white mb-1 line-clamp-1 font-serif">{featuredBook.title}</h2>
-                        <p className="text-gray-300 text-xs mb-3 line-clamp-2">{featuredBook.content?.substring(0, 80)}...</p>
-                        
-                        <div className="flex items-center gap-2">
-                            <button className="flex items-center gap-1 bg-white text-black px-3 py-1.5 rounded-full text-xs font-bold">
-                                <Play size={12} fill="currentColor" /> Ler Agora
-                            </button>
+          <div className="flex flex-col">
+              {/* Stories Bar (Optional touch) */}
+              <div className="flex gap-4 p-4 overflow-x-auto no-scrollbar border-b border-gray-100 dark:border-gray-800">
+                  <div className="flex flex-col items-center gap-1 cursor-pointer">
+                      <div className="w-16 h-16 rounded-full border-2 border-gray-300 dark:border-gray-700 p-0.5">
+                          <div className="w-full h-full bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center text-2xl font-light dark:text-white">+</div>
+                      </div>
+                      <span className="text-xs text-gray-600 dark:text-gray-400">Seu story</span>
+                  </div>
+                  {[1,2,3,4,5].map(i => (
+                       <div key={i} className="flex flex-col items-center gap-1 cursor-pointer">
+                        <div className="w-16 h-16 rounded-full border-2 border-pink-500 p-0.5">
+                             <img src={`https://picsum.photos/id/${100+i}/100/100`} className="w-full h-full rounded-full object-cover" />
                         </div>
+                        <span className="text-xs text-gray-600 dark:text-gray-400 w-16 truncate text-center">user_{i}</span>
                     </div>
-                    
-                    {/* Floating Cover */}
-                    <div className="absolute right-5 bottom-[-20px] w-24 aspect-[2/3] shadow-lg rounded-md overflow-hidden transform group-hover:-translate-y-2 transition-transform duration-500 hidden sm:block">
-                        <img src={featuredBook.coverUrl} className="w-full h-full object-cover" />
-                    </div>
-                </div>
+                  ))}
               </div>
-          )}
 
-          {/* Horizontal Sections */}
-          <BookSection 
-            section={{ title: "Recomendados para você", books: filteredBooks }} 
-            onBookClick={setViewingBook}
-            onToggleLike={handleToggleLike}
-          />
-
-          <BookSection 
-            section={{ title: "Mais lidos da semana", books: [...myBooks].reverse() }} 
-            onBookClick={setViewingBook}
-            onToggleLike={handleToggleLike}
-          />
-          
-          <BookSection 
-            section={{ title: "Novos Lançamentos", books: myBooks }} 
-            onBookClick={setViewingBook}
-            onToggleLike={handleToggleLike}
-          />
+              {/* Feed List */}
+              <div className="flex flex-col">
+                  {myBooks.map(book => (
+                      <FeedPost 
+                        key={book.id} 
+                        book={book} 
+                        onOpen={setViewingBook} 
+                        onToggleLike={handleToggleLike} 
+                      />
+                  ))}
+              </div>
+          </div>
         </div>
       );
     }
 
     if (activeTab === 'search') {
         return (
-            <div className="p-5 pb-20 min-h-screen">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Explorar</h2>
-                <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-xl px-4 py-3 mb-6">
-                    <Search size={20} className="text-gray-500 mr-2" />
-                    <input 
-                        type="text" 
-                        placeholder="Títulos, autores ou gêneros..." 
-                        className="bg-transparent w-full outline-none text-gray-800 dark:text-gray-200 placeholder-gray-400"
-                    />
+            <div className="pb-20">
+                <div className="sticky top-0 bg-white dark:bg-black z-10 px-4 py-3">
+                    <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-xl px-4 py-2">
+                        <Search size={18} className="text-gray-500 mr-2" />
+                        <input 
+                            type="text" 
+                            placeholder="Pesquisar" 
+                            className="bg-transparent w-full outline-none text-gray-800 dark:text-gray-200 placeholder-gray-400 text-sm"
+                        />
+                    </div>
                 </div>
 
-                <div className="space-y-4">
-                    <h3 className="font-bold text-gray-900 dark:text-white">Gêneros Populares</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                        {['Romance', 'Fantasia', 'Suspense', 'Negócios', 'História', 'Educação'].map((g, i) => (
-                            <div key={i} className="h-20 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center p-4 relative overflow-hidden group cursor-pointer">
-                                <span className="font-bold text-gray-700 dark:text-gray-300 z-10">{g}</span>
-                                <div className="absolute right-[-10px] bottom-[-10px] w-16 h-16 bg-current opacity-5 rounded-full group-hover:scale-150 transition-transform duration-500" />
-                            </div>
-                        ))}
-                    </div>
+                <div className="grid grid-cols-3 gap-0.5">
+                    {[...myBooks, ...myBooks, ...myBooks].map((book, i) => (
+                         <div 
+                            key={i} 
+                            onClick={() => setViewingBook(book)} 
+                            className="aspect-square bg-gray-200 dark:bg-gray-800 cursor-pointer overflow-hidden relative group"
+                        >
+                             <img src={book.coverUrl} className="w-full h-full object-cover" />
+                             {/* Hover effect for desktop, but subtle */}
+                             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                         </div>
+                    ))}
                 </div>
             </div>
         )
@@ -266,60 +205,92 @@ const App: React.FC = () => {
 
     if (activeTab === 'store') {
         return (
-            <div className="pb-20">
-               <div className="bg-gray-900 text-white p-8 mb-6 rounded-b-3xl">
-                  <h2 className="font-serif text-3xl font-bold mb-2">Loja Premium</h2>
-                  <p className="text-gray-400 text-sm">Adquira os best-sellers mundiais.</p>
-               </div>
-               <BookSection 
-                 section={{ title: "Em oferta", books: myBooks }} 
-                 onBookClick={setViewingBook}
-               />
-               <div className="px-5">
-                   <div className="p-6 bg-orange-100 dark:bg-orange-900/20 rounded-xl flex items-center justify-between">
-                        <div>
-                            <p className="font-bold text-orange-800 dark:text-orange-200">Livreiro Premium</p>
-                            <p className="text-xs text-orange-600 dark:text-orange-300">Acesso ilimitado a todos os livros.</p>
-                        </div>
-                        <button className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-bold">Assinar</button>
-                   </div>
-               </div>
+            <div className="flex flex-col items-center justify-center h-[80vh] p-8 text-center">
+                <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
+                    <Bookmark size={32} className="text-gray-400" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Loja em breve</h2>
+                <p className="text-gray-500 mt-2">Aqui você poderá comprar filtros exclusivos e produtos dos seus criadores favoritos.</p>
             </div>
         );
     }
 
     if (activeTab === 'profile') {
         return (
-            <div className="pb-20 p-5">
-                <div className="flex items-center gap-4 mb-8">
-                     <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden shadow-md">
-                        <img src="https://ui-avatars.com/api/?name=Voce&background=000&color=fff" className="w-full h-full object-cover" />
-                    </div>
-                    <div>
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Você</h2>
-                        <p className="text-sm text-gray-500">Membro desde 2024</p>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl text-center">
-                         <span className="block text-2xl font-bold text-primary">12</span>
-                         <span className="text-xs text-gray-500 uppercase">Livros Lidos</span>
-                     </div>
-                     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl text-center">
-                         <span className="block text-2xl font-bold text-primary">5</span>
-                         <span className="text-xs text-gray-500 uppercase">Escritos</span>
+            <div className="pb-20 bg-white dark:bg-black min-h-screen">
+                <div className="px-4 py-3 flex justify-between items-center sticky top-0 bg-white dark:bg-black z-10">
+                     <h2 className="font-bold text-xl text-gray-900 dark:text-white flex items-center gap-1">
+                        voce_oficial <span className="w-2 h-2 rounded-full bg-red-500" />
+                     </h2>
+                     <div className="flex gap-4">
+                        <PlusSquare size={24} className="text-gray-900 dark:text-white" />
+                        <Menu size={24} className="text-gray-900 dark:text-white cursor-pointer" onClick={() => setShowSettings(true)} />
                      </div>
                 </div>
 
-                <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-lg">Minha Biblioteca</h3>
-                <div className="grid grid-cols-3 gap-4">
-                     {myBooks.map(book => (
-                         <div key={book.id} onClick={() => setViewingBook(book)} className="cursor-pointer">
-                             <div className="rounded-lg overflow-hidden shadow-sm aspect-[2/3] mb-2">
-                                 <img src={book.coverUrl} className="w-full h-full object-cover" />
+                <div className="px-4 mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 p-[2px]">
+                            <img src="https://ui-avatars.com/api/?name=Voce&background=000&color=fff" className="w-full h-full rounded-full object-cover border-2 border-white dark:border-black" />
+                        </div>
+                        <div className="flex flex-1 justify-around text-center ml-4">
+                             <div>
+                                 <span className="block font-bold text-lg text-gray-900 dark:text-white">12</span>
+                                 <span className="text-sm text-gray-500">Posts</span>
                              </div>
-                             <p className="text-xs font-medium text-gray-800 dark:text-gray-200 truncate">{book.title}</p>
+                             <div>
+                                 <span className="block font-bold text-lg text-gray-900 dark:text-white">1.2K</span>
+                                 <span className="text-sm text-gray-500">Seguidores</span>
+                             </div>
+                             <div>
+                                 <span className="block font-bold text-lg text-gray-900 dark:text-white">340</span>
+                                 <span className="text-sm text-gray-500">Seguindo</span>
+                             </div>
+                        </div>
+                    </div>
+
+                    <div className="mb-4">
+                        <span className="font-bold text-gray-900 dark:text-white block">Você</span>
+                        <p className="text-sm text-gray-700 dark:text-gray-300">📸 Fotógrafo & Leitor<br/>📍 São Paulo, BR<br/>🔗 meulink.bio</p>
+                    </div>
+
+                    <div className="flex gap-2">
+                        <button className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-sm font-semibold py-1.5 rounded-lg">Editar Perfil</button>
+                        <button className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-sm font-semibold py-1.5 rounded-lg">Compartilhar</button>
+                        <button className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white px-2 rounded-lg"><UserCheck size={16}/></button>
+                    </div>
+                </div>
+
+                {/* Highlights */}
+                <div className="flex px-4 gap-4 overflow-x-auto no-scrollbar mb-4">
+                    {[1,2,3].map(i => (
+                        <div key={i} className="flex flex-col items-center gap-1 shrink-0">
+                             <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1">
+                                <div className="w-full h-full bg-gray-300 dark:bg-gray-700 rounded-full" />
+                             </div>
+                             <span className="text-xs text-gray-900 dark:text-white">Destaque {i}</span>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Tab Selector */}
+                <div className="flex border-t border-gray-100 dark:border-gray-800">
+                    <button className="flex-1 py-2 flex justify-center border-b-2 border-black dark:border-white">
+                        <Grid size={24} className="text-black dark:text-white" />
+                    </button>
+                    <button className="flex-1 py-2 flex justify-center">
+                        <Bookmark size={24} className="text-gray-400" />
+                    </button>
+                    <button className="flex-1 py-2 flex justify-center">
+                         <UserCheck size={24} className="text-gray-400" />
+                    </button>
+                </div>
+
+                {/* Grid */}
+                <div className="grid grid-cols-3 gap-0.5">
+                     {myBooks.filter(b => b.author === 'voce_oficial' || true).map((book, i) => (
+                         <div key={i} onClick={() => setViewingBook(book)} className="aspect-square bg-gray-100 dark:bg-gray-900 cursor-pointer relative group">
+                             <img src={book.coverUrl} className="w-full h-full object-cover" />
                          </div>
                      ))}
                 </div>
@@ -332,7 +303,7 @@ const App: React.FC = () => {
 
   return (
     <div className={`${theme} min-h-screen flex justify-center bg-gray-100 dark:bg-black transition-colors duration-500`}>
-        <div className="w-full max-w-md h-[100dvh] bg-white dark:bg-black flex flex-col relative shadow-2xl overflow-hidden transition-colors duration-500">
+        <div className="w-full max-w-md h-[100dvh] bg-white dark:bg-black flex flex-col relative shadow-2xl overflow-hidden transition-colors duration-500 border-x border-gray-200 dark:border-gray-800">
         
         <main className="flex-1 overflow-y-auto no-scrollbar bg-white dark:bg-black transition-colors duration-500">
             {renderContent()}

@@ -1,32 +1,27 @@
 
 import React from 'react';
-import { Bell } from 'lucide-react';
+import { Send, Heart } from 'lucide-react';
 
 interface TopBarProps {
   onOpenSettings?: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({ onOpenSettings }) => {
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
-
   return (
-    <div className="sticky top-0 bg-white/90 dark:bg-black/90 backdrop-blur-md z-50 transition-colors duration-300 px-5 py-4">
-      <div className="flex items-center justify-between">
-        <div>
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {greeting}, Leitor
-            </span>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight font-serif tracking-tight">
-                Livreiro AI
-            </h1>
-        </div>
+    <div className="sticky top-0 bg-white dark:bg-black border-b border-gray-100 dark:border-gray-800 z-50 px-4 py-3 flex items-center justify-between">
+      {/* Logo Style Typography */}
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-serif tracking-tight cursor-pointer">
+          Livreiro Social
+      </h1>
 
-        <button 
-            onClick={onOpenSettings}
-            className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-        >
-            <Bell size={20} />
+      <div className="flex items-center gap-5">
+        <button className="relative text-gray-900 dark:text-white hover:opacity-70 transition-opacity">
+            <Heart size={24} />
+            <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-black"></span>
+        </button>
+        <button className="relative text-gray-900 dark:text-white hover:opacity-70 transition-opacity">
+            <Send size={24} className="rotate-0" />
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] flex items-center justify-center rounded-full font-bold border-2 border-white dark:border-black">3</span>
         </button>
       </div>
     </div>
