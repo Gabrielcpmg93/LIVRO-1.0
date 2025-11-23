@@ -44,13 +44,13 @@ export const FeedPost: React.FC<FeedPostProps> = ({ book, onOpen, onToggleLike }
 
       {/* Post Image (Photo) */}
       <div 
-        className="w-full relative cursor-pointer group bg-gray-100 dark:bg-gray-900 aspect-square"
+        className="w-full relative cursor-pointer group bg-gray-100 dark:bg-gray-900"
         onDoubleClick={handleLike}
       >
         <img 
           src={book.coverUrl} 
           alt={book.title} 
-          className="w-full h-full object-cover"
+          className="w-full h-auto object-contain"
           loading="lazy"
         />
         
