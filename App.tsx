@@ -1,13 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import { TopBar } from './components/TopBar';
 import { BottomNav } from './components/BottomNav';
 import { FeedPost } from './components/FeedPost';
 import { Editor } from './components/Editor';
-import { Reader } from './components/Reader';
 import { SettingsModal } from './components/SettingsModal';
 import { NavTab, Book } from './types';
-import { Search, Grid, List, Bookmark, UserCheck, Menu, PlusSquare } from 'lucide-react';
+import { Search, Grid, Bookmark, UserCheck, Menu, PlusSquare, ArrowLeft } from 'lucide-react';
 
 const INITIAL_BOOKS: Book[] = [
   {
@@ -70,7 +68,7 @@ const INITIAL_BOOKS: Book[] = [
   }
 ];
 
-const App: React.FC = () => {
+export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NavTab>('home'); 
   const [myBooks, setMyBooks] = useState<Book[]>(INITIAL_BOOKS);
   const [viewingBook, setViewingBook] = useState<Book | null>(null);
@@ -126,6 +124,9 @@ const App: React.FC = () => {
       })
     );
   };
+
+  // Helper to get the latest state of the viewing book (so likes update in real time in the modal)
+  const currentViewBook = viewingBook ? (myBooks.find(b => b.id === viewingBook.id) || viewingBook) : null;
 
   const renderContent = () => {
     if (activeTab === 'create') {
@@ -301,33 +302,72 @@ const App: React.FC = () => {
         )
     }
 
-    return null;
-  };
-
-  return (
-    <div className={`${theme} min-h-screen flex justify-center bg-gray-100 dark:bg-black transition-colors duration-500`}>
-        <div className="w-full max-w-md h-[100dvh] bg-white dark:bg-black flex flex-col relative shadow-2xl overflow-hidden transition-colors duration-500 border-x border-gray-200 dark:border-gray-800">
-        
-        <main className="flex-1 overflow-y-auto no-scrollbar bg-white dark:bg-black transition-colors duration-500">
-            {renderContent()}
-        </main>
-
-        <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
-        
-        {/* Overlays */}
-        {viewingBook && (
-            <Reader book={viewingBook} onBack={() => setViewingBook(null)} />
-        )}
-
-        <SettingsModal 
-            isOpen={showSettings} 
-            onClose={() => setShowSettings(false)}
-            isDarkMode={theme === 'dark'}
-            toggleTheme={toggleTheme}
-        />
+    return (
+        <div className={`${theme} min-h-screen flex justify-center bg-gray-100 dark:bg-black transition-colors duration-500`}>
+            <div className="w-full max-w-md h-[100dvh] bg-white dark:bg-black flex flex-col relative shadow-2xl overflow-hidden transition-colors duration-500 border-x border-gray-200 dark:border-gray-800">
+            
+            <main className="flex-1 overflow-y-auto no-scrollbar bg-white dark:bg-black transition-colors duration-500">
+                {renderContent()}
+            </main>
+    
+            <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+            
+            {/* Single Post View Overlay (Replaces Reader) */}
+            {currentViewBook && (
+                <div className="fixed inset-0 z-[60] bg-white dark:bg-black flex flex-col animate-in slide-in-from-right duration-200 w-full max-w-md mx-auto">
+                    <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-gray-800 sticky top-0 bg-white dark:bg-black z-10">
+                        <button 
+                            onClick={() => setViewingBook(null)}
+                            className="text-gray-900 dark:text-white p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        >
+                            <ArrowLeft size={24} />
+                        </button>
+                        <div className="flex flex-col">
+                            <span className="font-bold text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wide">Explorar</span>
+                            <span className="font-bold text-lg text-gray-900 dark:text-white leading-none">Publicação</span>
+                        </div>
+                    </div>
+                    
+                    <div className="flex-1 overflow-y-auto bg-white dark:bg-black pb-20">
+                        {/* Actual Feed Post */}
+                        <FeedPost 
+                            book={currentViewBook} 
+                            onOpen={() => {}} 
+                            onToggleLike={handleToggleLike}
+                        />
+                        
+                        {/* Comments Section Mockup */}
+                        <div className="px-4 border-t border-gray-100 dark:border-gray-800 pt-4">
+                            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4">Comentários</h3>
+                            {[1, 2, 3].map((i) => (
+                                <div key={i} className="flex gap-3 mb-4">
+                                    <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0">
+                                        <img src={`https://ui-avatars.com/api/?name=User+${i}&background=random`} className="w-full h-full rounded-full" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm text-gray-900 dark:text-white">
+                                            <span className="font-semibold mr-2">user_{i}</span>
+                                            Foto incrível! 👏👏 Adorei as cores.
+                                        </p>
+                                        <div className="flex gap-4 mt-1">
+                                            <span className="text-xs text-gray-500 cursor-pointer">Responder</span>
+                                            <span className="text-xs text-gray-500 cursor-pointer">Curtir</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+    
+            <SettingsModal 
+                isOpen={showSettings} 
+                onClose={() => setShowSettings(false)}
+                isDarkMode={theme === 'dark'}
+                toggleTheme={toggleTheme}
+            />
+            </div>
         </div>
-    </div>
-  );
+    );
 };
-
-export default App;
